@@ -73,8 +73,29 @@ public class Book_details {
 
     // Added new methods
     public void addReview(String review) {
-        reviews.add(review);
-        lastModified = LocalDate.now(); // Update last modified date when a review is added
+        // Validate review content
+        if (review == null || review.trim().isEmpty()) {
+            throw new IllegalArgumentException("Review cannot be empty");
+        }
+
+        // Limit review length
+        if (review.length() > 500) {
+            throw new IllegalArgumentException("Review cannot exceed 500 characters");
+        }
+
+        // Add timestamp to review
+        String timestampedReview = String.format("[%s] %s", 
+            LocalDate.now().toString(), 
+            review.trim());
+
+        // Add review and update metadata
+        reviews.add(timestampedReview);
+        lastModified = LocalDate.now();
+
+        // Optional: Limit total number of reviews
+        if (reviews.size() > 100) {
+            reviews.remove(0); // Remove oldest review if limit exceeded
+        }
     }
 
     public void addCategory(String category) {
