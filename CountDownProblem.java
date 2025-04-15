@@ -197,14 +197,8 @@ class CountDownProblem {
       return Set.copyOf(list).size() == list.size();
    }
 
-   // Added a new helper to check uniqueness
-   static boolean allUnique(List<Integer> list) {
-      return Set.copyOf(list).size() == list.size();
-   }
-   
-   
    static <T> T head(List<T> list) {
-      return;
+      return list.get(0);
    }
 
    static <T> List<T> tail(List<T> list) {
@@ -308,34 +302,57 @@ class CountDownProblem {
     */
 
 
-  public static void main(String[] args) {
-    if (args.length < 2) {
-        System.err.println("Usage: java CountDownProblem <comma-separated-values> <target>");
+   public static void main(String[] args) {
+    if (args.length != 2) {
+        System.err.println("Usage: java CountDownProblem <comma-separated-numbers> <target>");
+        System.err.println("Example: java CountDownProblem 1,3,7,10,25,50 765");
         return;
     }
 
     List<Integer> numbers;
     try {
         numbers = Stream.of(args[0].split(","))
-                        .map(String::trim)
-                        .map(Integer::parseInt)
-                        .toList();
-        if (Set.copyOf(numbers).size() != numbers.size()) {
-            throw new IllegalArgumentException("Duplicate numbers found!");
+                       .map(String::trim)
+                       .filter(s -> !s.isEmpty())
+                       .map(Integer::parseInt)
+                       .toList();
+                       
+        if (numbers.isEmpty()) {
+            throw new IllegalArgumentException("No valid numbers provided");
         }
-    } catch (Exception e) {
-        System.err.println("Error parsing numbers: " + e.getMessage());
+        
+        if (!allUnique(numbers)) {
+            throw new IllegalArgumentException("Duplicate numbers are not allowed");
+        }
+    } catch (NumberFormatException e) {
+        System.err.println("Error: Invalid number format in input");
+        return;
+    } catch (IllegalArgumentException e) {
+        System.err.println("Error: " + e.getMessage());
         return;
     }
 
     int target;
     try {
         target = Integer.parseInt(args[1]);
+        if (!isValidTarget(target)) {
+            throw new IllegalArgumentException("Target must be between 1 and 999");
+        }
     } catch (NumberFormatException e) {
-        System.err.println("Invalid target number.");
+        System.err.println("Error: Invalid target number format");
+        return;
+    } catch (IllegalArgumentException e) {
+        System.err.println("Error: " + e.getMessage());
         return;
     }
 
-    // Call your method with `numbers` and `target` here, if applicable
+    var solutions = solutions(numbers, target).toList();
+    if (solutions.isEmpty()) {
+        System.out.println("No solutions found for target: " + target);
+    } else {
+        System.out.println("Solutions found:");
+        solutions.forEach(System.out::println);
+    }
+}
 }
 
