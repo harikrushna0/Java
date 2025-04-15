@@ -104,9 +104,7 @@ class CountDownProblem {
          case Val(var n) -> n > 0 ? OptionalInt.of(n) : OptionalInt.empty();
 
 
-         // eval (App o l r) = [apply o x y | x <- eval l,
-         //                                   y <- eval r,
-         //                                   valid o x y]
+         
          case App(var op, var l, var r) -> {
             var x = eval(l);
             var y = eval(r);
