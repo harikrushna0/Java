@@ -197,7 +197,12 @@ class CountDownProblem {
       };
    }
 
-   static <T> T head(List<T> list) {
+   // Added a new helper to check uniqueness
+   static boolean allUnique(List<Integer> list) {
+      return Set.copyOf(list).size() == list.size();
+   }
+   
+static <T> T head(List<T> list) {
       return list.get(0);
    }
 
