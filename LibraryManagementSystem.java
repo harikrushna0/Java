@@ -367,4 +367,131 @@ public class LibraryManagementSystem {
             super(message);
         }
     }
+
+    // New Analytics Classes
+    public static class LibraryAnalytics {
+        private final List<Book> books;
+        private final List<Member> members;
+        private final Map<String, List<LendingRecord>> lendingHistory;
+
+        public LibraryAnalytics(List<Book> books, List<Member> members, 
+                              Map<String, List<LendingRecord>> lendingHistory) {
+            this.books = books;
+            this.members = members;
+            this.lendingHistory = lendingHistory;
+        }
+
+        public Map<String, Integer> getGenreDistribution() {
+            Map<String, Integer> distribution = new HashMap<>();
+            books.stream()
+                 .map(Book::getGenre)
+                 .forEach(genre -> distribution.merge(genre, 1, Integer::sum));
+            return distribution;
+        }
+
+        public Map<MembershipType, Long> getMembershipDistribution() {
+            return members.stream()
+                         .collect(Collectors.groupingBy(
+                             Member::getMembershipType, 
+                             Collectors.counting()));
+        }
+
+        public double getAverageOverdueDays() {
+            return lendingHistory.values().stream()
+                               .flatMap(List::stream)
+                               .filter(LendingRecord::isOverdue)
+                               .mapToLong(LendingRecord::getOverdueDays)
+                               .average()
+                               .orElse(0.0);
+        }
+
+        public List<BookPopularityStats> getMostPopularBooks(int limit) {
+            Map<Book, Long> borrowCount = lendingHistory.values().stream()
+                .flatMap(List::stream)
+                .map(LendingRecord::getBook)
+                .collect(Collectors.groupingBy(
+                    book -> book,
+                    Collectors.counting()
+                ));
+
+            return books.stream()
+                       .map(book -> new BookPopularityStats(
+                           book, 
+                           borrowCount.getOrDefault(book, 0L),
+                           book.getAverageRating()))
+                       .sorted()
+                       .limit(limit)
+                       .toList();
+        }
+
+        public List<Member> getTopBorrowers(int limit) {
+            return members.stream()
+                         .sorted((m1, m2) -> 
+                             Integer.compare(
+                                 getLendingCount(m2.getMemberId()), 
+                                 getLendingCount(m1.getMemberId())))
+                         .limit(limit)
+                         .toList();
+        }
+
+        private int getLendingCount(String memberId) {
+            return lendingHistory.getOrDefault(memberId, List.of()).size();
+        }
+    }
+
+    public static class BookPopularityStats implements Comparable<BookPopularityStats> {
+        private final Book book;
+        private final long borrowCount;
+        private final double averageRating;
+
+        public BookPopularityStats(Book book, long borrowCount, double averageRating) {
+            this.book = book;
+            this.borrowCount = borrowCount;
+            this.averageRating = averageRating;
+        }
+
+        @Override
+        public int compareTo(BookPopularityStats other) {
+            int compareByBorrows = Long.compare(other.borrowCount, this.borrowCount);
+            if (compareByBorrows != 0) return compareByBorrows;
+            return Double.compare(other.averageRating, this.averageRating);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s (Borrowed: %d times, Rating: %.2f)",
+                book.getTitle(), borrowCount, averageRating);
+        }
+    }
+
+    // Add these methods to the main LibraryManagementSystem class
+    public LibraryAnalytics getAnalytics() {
+        return new LibraryAnalytics(books, members, lendingHistory);
+    }
+
+    public void generateReport() {
+        LibraryAnalytics analytics = getAnalytics();
+        System.out.println("=== Library System Report ===");
+        
+        System.out.println("\nGenre Distribution:");
+        analytics.getGenreDistribution()
+                .forEach((genre, count) -> 
+                    System.out.printf("  %s: %d books%n", genre, count));
+
+        System.out.println("\nMembership Distribution:");
+        analytics.getMembershipDistribution()
+                .forEach((type, count) -> 
+                    System.out.printf("  %s: %d members%n", type, count));
+
+        System.out.printf("\nAverage Overdue Days: %.2f%n", 
+                         analytics.getAverageOverdueDays());
+
+        System.out.println("\nTop 5 Most Popular Books:");
+        analytics.getMostPopularBooks(5)
+                .forEach(stats -> System.out.println("  " + stats));
+
+        System.out.println("\nTop 5 Most Active Borrowers:");
+        analytics.getTopBorrowers(5)
+                .forEach(member -> System.out.println("  " + member.getName()));
+    }
 }
