@@ -201,8 +201,8 @@ class CountDownProblem {
    static boolean allUnique(List<Integer> list) {
       return Set.copyOf(list).size() == list.size();
    }
-   
-static <T> T head(List<T> list) {
+
+   static <T> T head(List<T> list) {
       return list.get(0);
    }
 
