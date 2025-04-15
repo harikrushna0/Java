@@ -3,6 +3,8 @@ import java.util.Scanner;
 public class Book_details
 {
     String name,author;
+    String genre; // New field for book genre
+
     float price;
     int year;
     public Book_details()
