@@ -14,12 +14,12 @@ public class Book_details
     }
 
     // Added overloaded constructor
-    public Book_details(String name, String author, float price, int year, String genre) {
-        this.name = name;
-        this.author = author;
-        this.price = price;
-        this.year = validateYear(year);
-        this.genre = genre;
+   public static void main(String[] args) {
+    if (args.length != 2) {  // Modified condition
+        System.err.println("Exactly two arguments required: numbers and target");
+        System.err.println("Example: java CountDownProblem 1,3,7,10,25,50 765");
+        return;
+    }
 }
 
     public void display()

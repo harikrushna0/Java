@@ -275,13 +275,15 @@ class CountDownProblem {
       return perms(xs).flatMap(l -> interleave(x, l));
    }
 
-   // choices :: [a] -> [[a]]
-   // Using Stream<List<Integer> instead of List<List<Integer>>
-   static Stream<List<Integer>> choices(List<Integer> ns) {
-      // concat . map is translated as flatMap
-      // choices = concat . map perms . subs
-      return subs(ns).stream().flatMap(CountDownProblem::perms);
-   }
+
+    // Add new method
+    public boolean isClassic() {
+        return year < 1950 && price > 100;
+    }
+    
+    public String getGenreSummary() {
+        return String.format("Book genre: %s", this.genre);
+    }
 
    // solutions'' :: [Int] -> Int -> [Expr]
    // Using Stream<Expr> instead of List<Expr> 
