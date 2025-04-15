@@ -298,38 +298,36 @@ class CountDownProblem {
     * 
     *    java CountDownProblem.java 1,3,7,10,25,50 765
     */
-   + public static void main(String[] args) {
-+     if (args.length < 2) {
-+         System.err.println("Usage: java CountDownProblem <comma-separated-values> <target>");
-+         return;
-+     }
-+
-+     String[] numParts = args[0].split(",");
-+     List<Integer> numbers;
-+     try {
-+         numbers = Stream.of(numParts)
-+                         .map(Integer::parseInt)
-+                         .toList();
-+         if (Set.copyOf(numbers).size() != numbers.size()) {
-+             throw new IllegalArgumentException("Duplicate numbers found!");
-+         }
-+     } catch (Exception e) {
-+         System.err.println("Error parsing numbers: " + e.getMessage());
-+         return;
-+     }
-+
-+     int target;
-+     try {
-+         target = Integer.parseInt(args[1]);
-+     } catch (NumberFormatException e) {
-+         System.err.println("Invalid target number.");
-+         return;
-+     }
 
-      var start = System.currentTimeMillis();
-      solutions(numbers, target).forEach(e -> {
-         System.out.println(e);
-      });
-      System.out.println("Time taken (ms): " + (System.currentTimeMillis() - start));
-   }
+
+  public static void main(String[] args) {
+    if (args.length < 2) {
+        System.err.println("Usage: java CountDownProblem <comma-separated-values> <target>");
+        return;
+    }
+
+    List<Integer> numbers;
+    try {
+        numbers = Stream.of(args[0].split(","))
+                        .map(String::trim)
+                        .map(Integer::parseInt)
+                        .toList();
+        if (Set.copyOf(numbers).size() != numbers.size()) {
+            throw new IllegalArgumentException("Duplicate numbers found!");
+        }
+    } catch (Exception e) {
+        System.err.println("Error parsing numbers: " + e.getMessage());
+        return;
+    }
+
+    int target;
+    try {
+        target = Integer.parseInt(args[1]);
+    } catch (NumberFormatException e) {
+        System.err.println("Invalid target number.");
+        return;
+    }
+
+    // Call your method with `numbers` and `target` here, if applicable
 }
+
