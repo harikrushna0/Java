@@ -7,6 +7,12 @@ public class Book_details
 
     float price;
     int year;
+
+    // Add new method
+    public void setAvailability(boolean available) {
+        this.isAvailable = available;
+    }
+
     // Added overloaded constructor
     public Book_details(String name, String author, float price, int year, String genre) {
         this.name = name;
