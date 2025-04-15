@@ -7,19 +7,21 @@ public class Book_details
 
     float price;
     int year;
-    public Book_details()
-    {
-         Scanner s=new Scanner(System.in);
-        System.out.println("Enter Book name");
-        name=s.nextLine();
-        System.out.println("Enter Author");
-        author=s.nextLine();
-        System.out.println("Enter Price");
-        price=s.nextFloat();
-        System.out.println("Enter Year of Publication");
-        year=s.nextInt();
-        
+
+    // Add new method
+    public void setAvailability(boolean available) {
+        this.isAvailable = available;
     }
+
+    // Added overloaded constructor
+    public Book_details(String name, String author, float price, int year, String genre) {
+        this.name = name;
+        this.author = author;
+        this.price = price;
+        this.year = validateYear(year);
+        this.genre = genre;
+}
+
     public void display()
     {   
         System.out.println(name+" "+author+"  "+price+"  "+year);

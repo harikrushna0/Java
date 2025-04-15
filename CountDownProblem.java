@@ -293,6 +293,12 @@ class CountDownProblem {
          map(Result::expr);
    }
 
+   // Add new method
+   public static boolean isValidTarget(int target) {
+      return target > 0 && target <= 999;
+   }
+
+
    /*
     * usage example:
     * 
