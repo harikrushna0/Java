@@ -29,6 +29,7 @@ public class Book_details {
         this.copiesAvailable = 1;
         this.lastModified = LocalDate.now();
         this.categories = new HashSet<>();
+
     }
 
     // Modified display method
@@ -43,6 +44,27 @@ public class Book_details {
         System.out.println("Available: " + (isAvailable ? "Yes" : "No"));
         System.out.println("Copies: " + copiesAvailable);
         System.out.println("Categories: " + String.join(", ", categories));
+        System.out.println("Last Modified: " + lastModified);
+        if (isClassic()) {
+            System.out.println("This book is a classic.");
+        } else {
+            System.out.println("This book is not a classic.");
+        }
+        if (isValid()) {
+            System.out.println("This book is valid.");
+        } else {
+            System.out.println("This book is not valid.");
+        }
+        if (isAvailable) {
+            System.out.println("This book is available for borrowing.");
+        } else {
+            System.out.println("This book is not available for borrowing.");
+        }
+        if (copiesAvailable > 0) {
+            System.out.println("Number of copies available: " + copiesAvailable);
+        } else {
+            System.out.println("No copies available.");
+        }
         if (!reviews.isEmpty()) {
             System.out.println("Reviews:");
             reviews.forEach(review -> System.out.println("- " + review));
@@ -52,7 +74,7 @@ public class Book_details {
     // Added new methods
     public void addReview(String review) {
         reviews.add(review);
-        lastModified = LocalDate.now();
+        lastModified = LocalDate.now(); // Update last modified date when a review is added
     }
 
     public void addCategory(String category) {
