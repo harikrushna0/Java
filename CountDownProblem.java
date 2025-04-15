@@ -298,21 +298,33 @@ class CountDownProblem {
     * 
     *    java CountDownProblem.java 1,3,7,10,25,50 765
     */
-   public static void main(String[] args) {
-      if (args.length != 2) {
-         System.err.println("usage: java CountDownProblem.java <comma-separated-values> <target>");
-         System.exit(1);
-      }
-
-      int target = Integer.parseInt(args[1]);
-      List<Integer> numbers = Stream.of(args[0].split(",")).map(Integer::parseInt).toList();
-      // uniqueness check
-      try {
-         Set.of(numbers.toArray());
-      } catch (IllegalArgumentException iae) {
-         System.err.println(iae);
-         System.exit(2);
-      }
+   + public static void main(String[] args) {
++     if (args.length < 2) {
++         System.err.println("Usage: java CountDownProblem <comma-separated-values> <target>");
++         return;
++     }
++
++     String[] numParts = args[0].split(",");
++     List<Integer> numbers;
++     try {
++         numbers = Stream.of(numParts)
++                         .map(Integer::parseInt)
++                         .toList();
++         if (Set.copyOf(numbers).size() != numbers.size()) {
++             throw new IllegalArgumentException("Duplicate numbers found!");
++         }
++     } catch (Exception e) {
++         System.err.println("Error parsing numbers: " + e.getMessage());
++         return;
++     }
++
++     int target;
++     try {
++         target = Integer.parseInt(args[1]);
++     } catch (NumberFormatException e) {
++         System.err.println("Invalid target number.");
++         return;
++     }
 
       var start = System.currentTimeMillis();
       solutions(numbers, target).forEach(e -> {
