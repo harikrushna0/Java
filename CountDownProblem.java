@@ -74,10 +74,7 @@ class CountDownProblem {
             // show (Val n)     = show n
             case Val(var n) -> Integer.toString(n);
 
-            // show (App o l r) = brak l ++ show o ++ brak r
-            //          where
-            //             brak (Val n) = show n
-            //             brak e       = "(" ++ show e ++ ")"
+            
             case App(var op, var l, var r) -> brak(l) + op + brak(r);
          };
       }
@@ -202,6 +199,12 @@ class CountDownProblem {
       return Set.copyOf(list).size() == list.size();
    }
 
+   // Added a new helper to check uniqueness
+   static boolean allUnique(List<Integer> list) {
+      return Set.copyOf(list).size() == list.size();
+   }
+   
+   
    static <T> T head(List<T> list) {
       return list.get(0);
    }
