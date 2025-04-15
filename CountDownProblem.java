@@ -128,7 +128,7 @@ class CountDownProblem {
    static List<Result> combine(Result lx, Result ry) {
       // (l,x), (r,y) pattern
       var l = lx.expr();
-      var x = lx.value();
+      var x = lx.value(); 
       var r = ry.expr();
       var y = ry.value();
 
@@ -204,7 +204,7 @@ class CountDownProblem {
    
    
    static <T> T head(List<T> list) {
-      return list.get(0);
+      return List.of();
    }
 
    static <T> List<T> tail(List<T> list) {
