@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Stream;
+import java.util.HashSet;
 
 /*
  * This program is Java port of the Haskell example at
@@ -294,6 +295,72 @@ class CountDownProblem {
       return target > 0 && target <= 999;
    }
 
+   // Solution statistics class
+   static class SolutionStats {
+      private final int operationCount;
+      private final Set<Op> usedOperators;
+      private final int depth;
+      private final int smallestNumber;
+      private final int largestNumber;
+
+      public SolutionStats(Expr expr) {
+         this.usedOperators = new HashSet<>();
+         this.operationCount = countOperations(expr);
+         this.depth = calculateDepth(expr);
+         var numbers = findAllNumbers(expr);
+         this.smallestNumber = numbers.stream().mapToInt(Integer::intValue).min().orElse(0);
+         this.largestNumber = numbers.stream().mapToInt(Integer::intValue).max().orElse(0);
+      }
+
+      private int countOperations(Expr expr) {
+         return switch (expr) {
+            case Val(var n) -> 0;
+            case App(var op, var l, var r) -> {
+               usedOperators.add(op);
+               yield 1 + countOperations(l) + countOperations(r);
+            }
+         };
+      }
+
+      private int calculateDepth(Expr expr) {
+         return switch (expr) {
+            case Val(var n) -> 0;
+            case App(var op, var l, var r) -> 
+               1 + Math.max(calculateDepth(l), calculateDepth(r));
+         };
+      }
+
+      private List<Integer> findAllNumbers(Expr expr) {
+         return switch (expr) {
+            case Val(var n) -> List.of(n);
+            case App(var op, var l, var r) -> {
+               var numbers = new ArrayList<Integer>();
+               numbers.addAll(findAllNumbers(l));
+               numbers.addAll(findAllNumbers(r));
+               yield numbers;
+            }
+         };
+      }
+
+      @Override
+      public String toString() {
+         return String.format("""
+            Solution Statistics:
+            - Operations: %d
+            - Expression Depth: %d
+            - Operators Used: %s
+            - Number Range: %d to %d""",
+            operationCount, depth, usedOperators,
+            smallestNumber, largestNumber);
+      }
+   }
+
+   // Add new method to analyze solutions
+   static List<SolutionStats> analyzeSolutions(Stream<Expr> solutions) {
+      return solutions
+         .map(SolutionStats::new)
+         .toList();
+   }
 
    /*
     * usage example:
