@@ -207,30 +207,7 @@ class CountDownProblem {
       return len == 1 ? List.of() : list.subList(1, len);
    }
 
-   // subs :: [a] -> [[a]]
-   static List<List<Integer>> subs(List<Integer> ns) {
-      // subs [] = [[]]
-      if (ns.isEmpty()) {
-         return List.of(List.of());
-      }
-
-      // subs (x:xs)
-      var x = head(ns);
-      var xs = tail(ns);
-
-      // where yss = sub(xs)
-      var yss = subs(xs);
-
-      // yss ++ map (x:) yss
-      var res = new ArrayList<List<Integer>>();
-      res.addAll(yss);
-      yss.stream().
-          map(l -> cons(x, l)).
-          forEach(res::add);
-
-      return res;
-   }
-
+  
    // interleave :: a -> [a] -> [[a]]
    // Using Stream<List<Integer> instead of List<List<Integer>>
    static Stream<List<Integer>> interleave(int x, List<Integer> ns) {
@@ -254,7 +231,7 @@ class CountDownProblem {
    }
 
    // perms :: [a] -> [[a]]
-   // Using Stream<List<Integer> instead of List<List<Integer>>
+   // Using Stream<List<Integer>> instead of List<List<Integer>>
    static Stream<List<Integer>> perms(List<Integer> ns) {
       // perms []     = [[]] 
       if (ns.isEmpty()) {
@@ -362,64 +339,157 @@ class CountDownProblem {
          .toList();
    }
 
-   /*
-    * usage example:
-    * 
-    *    java CountDownProblem.java 1,3,7,10,25,50 765
-    */
+   // New Solution Analysis classes and methods
+   static class OperatorStatistics {
+      private final Map<Op, Integer> operatorUsage;
+      private final Map<Op, Double> operatorSuccessRate;
+      private int totalOperations;
 
+      public OperatorStatistics() {
+         this.operatorUsage = new EnumMap<>(Op.class);
+         this.operatorSuccessRate = new EnumMap<>(Op.class);
+         this.totalOperations = 0;
+      }
 
+      public void addOperation(Op op, boolean successful) {
+         operatorUsage.merge(op, 1, Integer::sum);
+         operatorSuccessRate.merge(op, successful ? 1.0 : 0.0, Double::sum);
+         totalOperations++;
+      }
+
+      public Map<Op, Double> getSuccessRates() {
+         Map<Op, Double> rates = new EnumMap<>(Op.class);
+         operatorUsage.forEach((op, usage) -> 
+            rates.put(op, operatorSuccessRate.get(op) / usage));
+         return rates;
+      }
+
+      @Override
+      public String toString() {
+         StringBuilder sb = new StringBuilder("Operator Statistics:\n");
+         getSuccessRates().forEach((op, rate) -> 
+            sb.append(String.format("  %s: %.2f%% success rate (%d uses)\n",
+               op, rate * 100, operatorUsage.get(op))));
+         return sb.toString();
+      }
+   }
+
+   static class ExpressionAnalyzer {
+      private final List<Expr> expressions;
+      private final OperatorStatistics opStats;
+      private double averageDepth;
+      private int maxDepth;
+      private double averageOperations;
+      private int maxOperations;
+
+      public ExpressionAnalyzer(List<Expr> expressions) {
+         this.expressions = expressions;
+         this.opStats = new OperatorStatistics();
+         analyzeExpressions();
+      }
+
+      private void analyzeExpressions() {
+         if (expressions.isEmpty()) return;
+
+         int totalDepth = 0;
+         int totalOps = 0;
+         maxDepth = 0;
+         maxOperations = 0;
+
+         for (Expr expr : expressions) {
+            SolutionStats stats = new SolutionStats(expr);
+            totalDepth += stats.depth;
+            totalOps += stats.operationCount;
+            maxDepth = Math.max(maxDepth, stats.depth);
+            maxOperations = Math.max(maxOperations, stats.operationCount);
+         }
+
+         averageDepth = (double) totalDepth / expressions.size();
+         averageOperations = (double) totalOps / expressions.size();
+      }
+
+      @Override
+      public String toString() {
+         return String.format("""
+            Expression Analysis:
+            - Total Solutions: %d
+            - Average Depth: %.2f
+            - Max Depth: %d
+            - Average Operations: %.2f
+            - Max Operations: %d
+            %s""",
+            expressions.size(), averageDepth, maxDepth,
+            averageOperations, maxOperations, opStats);
+      }
+   }
+
+   // Delete the old main method and replace with enhanced version
    public static void main(String[] args) {
-    if (args.length != 2) {
-        System.err.println("Usage: java CountDownProblem <comma-separated-numbers> <target>");
-        System.err.println("Example: java CountDownProblem 1,3,7,10,25,50 765");
-        return;
-    }
+      if (args.length != 2) {
+         System.err.println("Usage: java CountDownProblem <comma-separated-numbers> <target>");
+         System.err.println("Example: java CountDownProblem 1,3,7,10,25,50 765");
+         return;
+      }
 
-    List<Integer> numbers;
-    try {
-        numbers = Stream.of(args[0].split(","))
-                       .map(String::trim)
-                       .filter(s -> !s.isEmpty())
-                       .map(Integer::parseInt)
-                       .toList();
-                       
-        if (numbers.isEmpty()) {
+      List<Integer> numbers;
+      try {
+         numbers = Stream.of(args[0].split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .map(Integer::parseInt)
+                        .toList();
+                        
+         if (numbers.isEmpty()) {
             throw new IllegalArgumentException("No valid numbers provided");
-        }
-        
-        if (!allUnique(numbers)) {
+         }
+         
+         if (!allUnique(numbers)) {
             throw new IllegalArgumentException("Duplicate numbers are not allowed");
-        }
-    } catch (NumberFormatException e) {
-        System.err.println("Error: Invalid number format in input");
-        return;
-    } catch (IllegalArgumentException e) {
-        System.err.println("Error: " + e.getMessage());
-        return;
-    }
+         }
+         
+         if (numbers.size() > 6) {
+            throw new IllegalArgumentException("Maximum 6 numbers allowed");
+         }
+      } catch (NumberFormatException e) {
+         System.err.println("Error: Invalid number format in input");
+         return;
+      } catch (IllegalArgumentException e) {
+         System.err.println("Error: " + e.getMessage());
+         return;
+      }
 
-    int target;
-    try {
-        target = Integer.parseInt(args[1]);
-        if (!isValidTarget(target)) {
+      int target;
+      try {
+         target = Integer.parseInt(args[1]);
+         if (!isValidTarget(target)) {
             throw new IllegalArgumentException("Target must be between 1 and 999");
-        }
-    } catch (NumberFormatException e) {
-        System.err.println("Error: Invalid target number format");
-        return;
-    } catch (IllegalArgumentException e) {
-        System.err.println("Error: " + e.getMessage());
-        return;
-    }
+         }
+      } catch (NumberFormatException e) {
+         System.err.println("Error: Invalid target number format");
+         return;
+      } catch (IllegalArgumentException e) {
+         System.err.println("Error: " + e.getMessage());
+         return;
+      }
 
-    var solutions = solutions(numbers, target).toList();
-    if (solutions.isEmpty()) {
-        System.out.println("No solutions found for target: " + target);
-    } else {
-        System.out.println("Solutions found:");
-        solutions.forEach(System.out::println);
-    }
-}
+      System.out.printf("Finding solutions for target %d using numbers %s...%n", 
+                        target, numbers);
+
+      var solutions = solutions(numbers, target).toList();
+      if (solutions.isEmpty()) {
+         System.out.println("No solutions found.");
+      } else {
+         System.out.printf("%nFound %d solutions:%n", solutions.size());
+         solutions.forEach(solution -> System.out.println("  " + solution));
+
+         System.out.println("\nDetailed Analysis:");
+         var analyzer = new ExpressionAnalyzer(solutions);
+         System.out.println(analyzer);
+
+         var stats = analyzeSolutions(solutions.stream());
+         System.out.println("\nSolution Statistics:");
+         stats.forEach(stat -> System.out.println("  " + stat));
+      }
+   }
 }
 
