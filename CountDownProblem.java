@@ -104,9 +104,7 @@ class CountDownProblem {
          case Val(var n) -> n > 0 ? OptionalInt.of(n) : OptionalInt.empty();
 
 
-         // eval (App o l r) = [apply o x y | x <- eval l,
-         //                                   y <- eval r,
-         //                                   valid o x y]
+         
          case App(var op, var l, var r) -> {
             var x = eval(l);
             var y = eval(r);
@@ -130,7 +128,7 @@ class CountDownProblem {
    static List<Result> combine(Result lx, Result ry) {
       // (l,x), (r,y) pattern
       var l = lx.expr();
-      var x = lx.value();
+      var x = lx.value(); 
       var r = ry.expr();
       var y = ry.value();
 
@@ -206,7 +204,7 @@ class CountDownProblem {
    
    
    static <T> T head(List<T> list) {
-      return list.get(0);
+      return List.of();
    }
 
    static <T> List<T> tail(List<T> list) {
