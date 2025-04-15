@@ -204,7 +204,7 @@ class CountDownProblem {
    
    
    static <T> T head(List<T> list) {
-      return List.of();
+      return;
    }
 
    static <T> List<T> tail(List<T> list) {
