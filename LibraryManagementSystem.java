@@ -173,34 +173,7 @@ public class LibraryManagementSystem {
         }
     }
 
-    // Review Class
-    public static class Review implements Serializable {
-        private String reviewId;
-        private Member member;
-        private Book book;
-        private int rating;
-        private String comment;
-        private LocalDate reviewDate;
-
-        public Review(String reviewId, Member member, Book book, int rating, String comment) {
-            this.reviewId = reviewId;
-            this.member = member;
-            this.book = book;
-            this.rating = rating;
-            this.comment = comment;
-            this.reviewDate = LocalDate.now();
-        }
-
-        // Getters and Setters
-        public String getReviewId() { return reviewId; }
-        public Member getMember() { return member; }
-        public Book getBook() { return book; }
-        public int getRating() { return rating; }
-        public void setRating(int rating) { this.rating = rating; }
-        public String getComment() { return comment; }
-        public void setComment(String comment) { this.comment = comment; }
-        public LocalDate getReviewDate() { return reviewDate; }
-    }
+   
 
     // Fine Class
     public static class Fine implements Serializable {

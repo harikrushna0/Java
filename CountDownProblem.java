@@ -207,7 +207,70 @@ class CountDownProblem {
       return len == 1 ? List.of() : list.subList(1, len);
    }
 
-  
+   static <T> List<T> init(List<T> list) {
+      final var len = list.size();
+      return len == 1 ? List.of() : list.subList(0, len - 1);
+   }
+   static <T> T last(List<T> list) {
+      return list.get(list.size() - 1);
+   }
+   static <T> boolean isEmpty(List<T> list) {
+      return list.isEmpty();
+   }
+   static <T> int length(List<T> list) {
+      return list.size();
+   }
+   static <T> List<T> take(int n, List<T> list) {
+      return list.subList(0, Math.min(n, list.size()));
+   }
+   static <T> List<T> drop(int n, List<T> list) {
+      return list.subList(Math.min(n, list.size()), list.size());
+   }
+   static <T> List<T> takeWhile(java.util.function.Predicate<T> pred, List<T> list) {
+      var res = new ArrayList<T>();
+      for (var item : list) {
+         if (pred.test(item)) {
+            res.add(item);
+         } else {
+            break;
+         }
+      }
+      return res;
+   }
+   static <T> List<T> dropWhile(java.util.function.Predicate<T> pred, List<T> list) {
+      var res = new ArrayList<T>();
+      boolean found = false;
+      for (var item : list) {
+         if (found || !pred.test(item)) {
+            res.add(item);
+            found = true;
+         }
+      }
+      return res;
+   }
+   Static <T> List<T> filter(java.util.function.Predicate<T> pred, List<T> list) {
+      var res = new ArrayList<T>();
+      for (var item : list) {
+         if (pred.test(item)) {
+            res.add(item);
+         }
+      }
+      return res;
+   }
+   static <T> List<T> map(java.util.function.Function<T, T> func, List<T> list) {
+      var res = new ArrayList<T>();
+      for (var item : list) {
+         res.add(func.apply(item));
+      }
+      return res;
+   }
+   static <T> List<T> concat(List<List<T>> lists) {
+      var res = new ArrayList<T>();
+      for (var list : lists) {
+         res.addAll(list);
+      }
+      return res;
+   }
    // interleave :: a -> [a] -> [[a]]
    // Using Stream<List<Integer> instead of List<List<Integer>>
    static Stream<List<Integer>> interleave(int x, List<Integer> ns) {
