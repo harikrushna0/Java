@@ -1,6 +1,3 @@
-package Book;
-import java.util.*;
-import java.time.LocalDate;
 
 public class Book_details {
     // Added new fields
