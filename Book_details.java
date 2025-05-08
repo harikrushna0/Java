@@ -2,57 +2,31 @@ package Book;
 import java.util.*;
 import java.time.LocalDate;
 
-public class Book_details {
-    // Added new fields
-    private String isbn;
-    private String name;
-    private String author;
-    private String genre;
-    private float price;
-    private int year;
-    private List<String> reviews;
-    private boolean isAvailable;
-    private int copiesAvailable;
-    private LocalDate lastModified;
-    private Set<String> categories;
-    
-    // Added constructor
-    public Book_details(String isbn, String name, String author, String genre, float price, int year) {
-        this.isbn = isbn;
-        this.name = name;
-        this.author = author;
-        this.genre = genre;
-        this.price = price;
-        this.year = year;
-        this.reviews = new ArrayList<>();
-        this.isAvailable = true;
-        this.copiesAvailable = 1;
-        this.lastModified = LocalDate.now();
-        this.categories = new HashSet<>();
-    }
-
-    // Modified display method
-    public void display() {   
-        System.out.println("=== Book Details ===");
-        System.out.println("ISBN: " + isbn);
-        System.out.println("Title: " + name);
-        System.out.println("Author: " + author);
-        System.out.println("Genre: " + genre);
-        System.out.println("Price: $" + String.format("%.2f", price));
-        System.out.println("Year: " + year);
-        System.out.println("Available: " + (isAvailable ? "Yes" : "No"));
-        System.out.println("Copies: " + copiesAvailable);
-        System.out.println("Categories: " + String.join(", ", categories));
-        if (!reviews.isEmpty()) {
-            System.out.println("Reviews:");
-            reviews.forEach(review -> System.out.println("- " + review));
-        }
-    }
-
     // Added new methods
     public void addReview(String review) {
-        reviews.add(review);
+        // Validate review content
+        if (review == null || review.trim().isEmpty()) {
+            throw new IllegalArgumentException("Review cannot be empty");
+        }
+
+        // Limit review length
+        if (review.length() > 500) {
+            throw new IllegalArgumentException("Review cannot exceed 500 characters");
+        }
+
+        // Add timestamp to review
+        String timestampedReview = String.format("[%s] %s", 
+            LocalDate.now().toString(), 
+            review.trim());
+
+        // Add review and update metadata
+        reviews.add(timestampedReview);
         lastModified = LocalDate.now();
+
+        // Optional: Limit total number of reviews
+        if (reviews.size() > 100) {
+            reviews.remove(0); // Remove oldest review if limit exceeded
+        }
     }
 
     public void addCategory(String category) {
